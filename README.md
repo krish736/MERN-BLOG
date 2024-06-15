@@ -1,2 +1,2 @@
 # MERN-BLOG
- Blog web app creating using MERN
+ Blog web app created using MERN
