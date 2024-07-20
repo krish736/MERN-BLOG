@@ -5,7 +5,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon } from "react-icons/fa";
 
 export default function Header() {
-  const path = useLocation().pathname
+  const path = useLocation().pathname;
   return (
     <Navbar className="border-b-2">
       <Link
@@ -29,7 +29,7 @@ export default function Header() {
         <AiOutlineSearch />
       </Button>
       <div className="flex gap-2 md:order-2">
-        <Button className="h-10 w-12 hidden sm:inline" color="grey" pill>
+        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
           <FaMoon />
         </Button>
         <Link to="/signin">
