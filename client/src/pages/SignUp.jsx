@@ -74,7 +74,7 @@ export default function SignUp() {
               <Label value="Your Email" />
               <TextInput
                 type="email"
-                placeholder="Email"
+                placeholder="xyz@gmail.com"
                 id="email"
                 onChange={handleChange}
               />
@@ -83,7 +83,7 @@ export default function SignUp() {
               <Label value="Your Password" />
               <TextInput
                 type="password"
-                placeholder="Password"
+                placeholder="********"
                 id="password"
                 onChange={handleChange}
               />
