@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { Alert, Button, TextInput } from "flowbite-react";
+import { Alert, Button, Modal, ModalBody, TextInput } from "flowbite-react";
 import {
   getDownloadURL,
   getStorage,
@@ -14,12 +14,17 @@ import {
   updateStart,
   updateSuccess,
   updateFailure,
+  deleteStart,
+  deleteSuccess,
+  deleteFailure,
+  signOut,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 export default function DashProfile() {
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileURL, setImageFileURL] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
@@ -28,6 +33,7 @@ export default function DashProfile() {
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [updateUserError, setUpdateUserError] = useState(null);
   const [formData, setFormData] = useState({});
+  const [showModal, setShowModal] = useState();
   const filePickerRef = useRef();
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -120,6 +126,42 @@ export default function DashProfile() {
     }
   };
 
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(deleteFailure(data.message));
+      } else {
+        dispatch(deleteSuccess(data));
+      }
+    } catch (error) {
+      dispatch(deleteFailure(error.message));
+    }
+  };
+
+  const handleSignout = async () => {
+    try {
+      const res = await fetch(`/api/user/signout`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signOut());
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className="max-w-lg mx-auto p-3 w-full ">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
@@ -190,8 +232,8 @@ export default function DashProfile() {
         </Button>
       </form>
       <div className="flex justify-between text-red-600 mt-5">
-        <span>Delete Account</span>
-        <span>Sign Out</span>
+        <span onClick={() => setShowModal(true)}>Delete Account</span>
+        <span onClick={handleSignout}>Sign Out</span>
       </div>
       {updateUserSuccess && (
         <Alert color="success" className=" mt-5">
@@ -203,6 +245,33 @@ export default function DashProfile() {
           {updateUserError}{" "}
         </Alert>
       )}
+      {error && (
+        <Alert color="failure" className=" mt-5">
+          {error}{" "}
+        </Alert>
+      )}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <ModalBody>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete your account?
+            </h3>
+            <div className="flex justify-between">
+              <Button color="failure" onClick={handleDeleteUser}>
+                Delete
+              </Button>
+              <Button onClick={() => setShowModal(false)}>Cancel</Button>
+            </div>
+          </div>
+        </ModalBody>
+      </Modal>
     </div>
   );
 }

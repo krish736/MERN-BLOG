@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { errorHandler } from "../utils/error.js";
 import User from "../models/users.model.js";
+
 export const test = (req, res) => {
   res.json({ message: "working" });
 };
@@ -50,6 +51,26 @@ export const updateUser = async (req, res, next) => {
     );
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  if (req.user.id != req.params.userId) {
+    return next(errorHandler(403, "Unauthorized"));
+  }
+  try {
+    await User.findByIdAndDelete(req.params.userId);
+    res.status(200).json("User Deleted Succesfully!");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signOut = async (req, res, next) => {
+  try {
+    res.clearCookie("acces_token").status(200).json("Signed Out Succesfully!");
   } catch (error) {
     next(error);
   }
