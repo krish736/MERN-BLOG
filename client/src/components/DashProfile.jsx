@@ -108,14 +108,18 @@ export default function DashProfile() {
         headers: {
           "Content-Type": "application/json",
         },
+
+        
         body: JSON.stringify(formData),
+        
       });
       const data = await res.json();
-
       if (!res.ok) {
         dispatch(updateFailure(date.message));
         setUpdateUserError(data.message);
       } else {
+        console.log(data);
+        
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("Profile Updated Successfully!");
         setImageFileUploadProgress(null);
